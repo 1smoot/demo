@@ -1,5 +1,10 @@
-package domain;
+package com.example.demo.domain.posts;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.After;
@@ -8,12 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.example.demo.domain.posts.Posts;
-import com.example.demo.domain.posts.PostsRepository;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -42,5 +41,24 @@ public class PostsRepositoryTest {
 		Posts posts = postsList.get(0);
 		assertThat(posts.getTitle(), is("테스트 제목"));
 		assertThat(posts.getContent(), is("테스트 테스트"));
+	}
+	
+	@Test
+	public void BaseTimeEntity_register() {
+		//given
+		LocalDateTime now = LocalDateTime.now();
+		postsRepository.save(Posts.builder()
+				.title("test title")
+				.content("test content")
+				.author("kaypro")
+				.build());
+		
+		//when
+		List<Posts> postsList = postsRepository.findAll();
+		
+		//then
+		Posts posts = postsList.get(0);
+		assertTrue(posts.getCreatedDate().isAfter(now));
+		assertTrue(posts.getModifiedDate().isAfter(now));
 	}
 }
